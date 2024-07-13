@@ -3,6 +3,7 @@ const math = std.math;
 const rl = @import("raylib");
 const utils = @import("utils.zig");
 const Canvas = @import("canvas_elements.zig").Canvas;
+const String = @import("string.zig");
 
 const ui_elements = @import("ui_elements.zig");
 

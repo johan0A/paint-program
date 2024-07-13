@@ -1,6 +1,7 @@
 const rl = @import("raylib");
 
 const utils = @import("utils.zig");
+const String = @import("string.zig");
 
 const ClickableZoneState = struct {
     mouse_hover: bool,
