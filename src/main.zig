@@ -11,16 +11,22 @@ const Vector2D = utils.Vector2D;
 
 pub var global_ctx: struct {
     camera: rl.Camera2D,
-} = .{
-    .camera = rl.Camera2D{
-        .offset = rl.Vector2{ .x = 0, .y = 0 },
-        .target = rl.Vector2{ .x = 0, .y = 0 },
-        .rotation = 0,
-        .zoom = 2,
-    },
-};
+    tooltip: ui_elements.Tooltip,
+} = undefined;
 
 pub fn main() anyerror!void {
+    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
+    const allocator = gpa.allocator();
+    global_ctx = .{
+        .camera = rl.Camera2D{
+            .offset = rl.Vector2{ .x = 0, .y = 0 },
+            .target = rl.Vector2{ .x = 0, .y = 0 },
+            .rotation = 0,
+            .zoom = 2,
+        },
+        .tooltip = try ui_elements.Tooltip.init(allocator),
+    };
+
     rl.setConfigFlags(.{
         .msaa_4x_hint = true,
         .window_resizable = true,
@@ -33,9 +39,6 @@ pub fn main() anyerror!void {
     defer rl.closeWindow();
 
     rl.setTargetFPS(144);
-
-    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
-    const allocator = gpa.allocator();
 
     var line = std.ArrayList(Vector2D(i32)).init(allocator);
     defer line.deinit();
@@ -68,15 +71,13 @@ pub fn main() anyerror!void {
         rl.beginDrawing();
         defer rl.endDrawing();
         rl.clearBackground(rl.Color.white);
-        {
-            rl.drawFPS(0, 0);
-        }
+
         global_ctx.camera.begin();
-        defer global_ctx.camera.end();
         {
             canvas_texture.draw(0, 0, rl.Color.white);
 
-            if (ui_elements.textButton("HELLO!", button_state.pos.x(), button_state.pos.y(), .{}, .mouse_button_left).on_press) {
+            var button_values = ui_elements.textButton("HELLO!", button_state.pos.x(), button_state.pos.y(), .{}, .mouse_button_left);
+            if (button_values.on_press) {
                 button_state.grabbed = true;
             }
             if (!rl.isMouseButtonDown(.mouse_button_left)) {
@@ -87,6 +88,31 @@ pub fn main() anyerror!void {
                 button_state.pos.values[0] += @intFromFloat(rl.getMouseDelta().x / camera.zoom);
                 button_state.pos.values[1] += @intFromFloat(rl.getMouseDelta().y / camera.zoom);
             }
+            if (button_values.mouse_hover) {
+                try global_ctx.tooltip.changeText("HELLO!");
+                global_ctx.tooltip.active = true;
+            }
+
+            button_values = ui_elements.textButton(
+                "HAAAAAA!",
+                500,
+                500,
+                .{
+                    .fontSize = 100,
+                },
+                .mouse_button_left,
+            );
+            if (button_values.mouse_hover) {
+                try global_ctx.tooltip.changeText("HAAAAAA!");
+                global_ctx.tooltip.active = true;
+            }
+        }
+        global_ctx.camera.end();
+
+        {
+            rl.drawFPS(0, 0);
+            global_ctx.tooltip.draw();
+            global_ctx.tooltip.tick();
         }
     }
 }
