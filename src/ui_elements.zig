@@ -112,3 +112,28 @@ pub const Tooltip = struct {
         self.timer = 0;
     }
 };
+
+pub fn imagButton(posX: i32, posY: i32, width: i32, height: i32, mouse_button: rl.MouseButton, texture: rl.Texture2D) ClickableZoneState {
+    const cliclable_rect = clickableRectangleZone(
+        posX,
+        posY,
+        width,
+        height,
+        mouse_button,
+    );
+
+    if (cliclable_rect.mouse_hover) {
+        const border_width = 5;
+        rl.drawRectangle(posX + border_width, posY + border_width, width + border_width, height + border_width, rl.Color.red);
+    }
+
+    rl.drawRectangle(posX, posY, width, height, rl.Color.black);
+    texture.drawEx(
+        rl.Vector2.init(@floatFromInt(posX), @floatFromInt(posY)),
+        0,
+        @as(f32, @floatFromInt(width)) / @as(f32, @floatFromInt(texture.width)),
+        rl.Color.white,
+    );
+
+    return cliclable_rect;
+}
