@@ -57,8 +57,15 @@ pub fn main() anyerror!void {
     while (!rl.windowShouldClose()) {
         {
             if (rl.isMouseButtonDown(.mouse_button_middle)) {
-                global_ctx.camera.offset = global_ctx.camera.offset.add(rl.getMouseDelta());
+                global_ctx.camera.target = global_ctx.camera.target.subtract(
+                    rl.getMouseDelta().scale(1 / global_ctx.camera.zoom),
+                );
             }
+            global_ctx.camera.offset = rl.Vector2.init(
+                @as(f32, @floatFromInt(rl.getScreenWidth())) / 2,
+                @as(f32, @floatFromInt(rl.getScreenHeight())) / 2,
+            );
+
             global_ctx.camera.zoom += rl.getMouseWheelMove() * 0.1 * global_ctx.camera.zoom;
             global_ctx.camera.zoom = if (global_ctx.camera.zoom >= 0) global_ctx.camera.zoom else 0;
         }

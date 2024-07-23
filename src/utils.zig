@@ -82,13 +82,9 @@ pub fn screenSpaceToWorldSpace(
     posY: i32,
 ) Vector2D(i32) {
     const camera = main.global_ctx.camera;
-    // return .{
-    //     .x = @intFromFloat(@as(f32, @floatFromInt(posX)) / camera.zoom - camera.offset.x / camera.zoom),
-    //     .y = @intFromFloat(@as(f32, @floatFromInt(posY)) / camera.zoom - camera.offset.y / camera.zoom),
-    // };
     return Vector2D(i32).init(
-        @intFromFloat(@as(f32, @floatFromInt(posX)) / camera.zoom - camera.offset.x / camera.zoom),
-        @intFromFloat(@as(f32, @floatFromInt(posY)) / camera.zoom - camera.offset.y / camera.zoom),
+        @intFromFloat(@as(f32, @floatFromInt(posX)) / camera.zoom - camera.offset.x / camera.zoom + camera.target.x),
+        @intFromFloat(@as(f32, @floatFromInt(posY)) / camera.zoom - camera.offset.y / camera.zoom + camera.target.y),
     );
 }
 
