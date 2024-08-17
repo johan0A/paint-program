@@ -88,6 +88,27 @@ pub fn screenSpaceToWorldSpace(
     );
 }
 
+pub fn currentSpaceToWorldSpace(posX: i32, posY: i32) Vector2D(i32) {
+    if (main.global_ctx.is_camera_active) {
+        return .{
+            .values = .{
+                posX,
+                posY,
+            },
+        };
+    } else {
+        return screenSpaceToWorldSpace(posX, posY);
+    }
+}
+
 pub fn getWorldMousePos() Vector2D(i32) {
     return screenSpaceToWorldSpace(rl.getMouseX(), rl.getMouseY());
+}
+
+pub fn getMousePos() Vector2D(i32) {
+    if (main.global_ctx.is_camera_active) {
+        return screenSpaceToWorldSpace(rl.getMouseX(), rl.getMouseY());
+    } else {
+        return Vector2D(i32).init(rl.getMouseX(), rl.getMouseY());
+    }
 }

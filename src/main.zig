@@ -11,12 +11,24 @@ const Vector2D = utils.Vector2D;
 
 pub var global_ctx: struct {
     camera: rl.Camera2D,
+    is_camera_active: bool,
     tooltip: ui_elements.Tooltip,
+
+    fn beginCamera(self: *@This()) void {
+        self.is_camera_active = true;
+        self.camera.begin();
+    }
+
+    fn endCamera(self: *@This()) void {
+        self.camera.end();
+        self.is_camera_active = false;
+    }
 } = undefined;
 
 pub fn main() anyerror!void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     const allocator = gpa.allocator();
+
     global_ctx = .{
         .camera = rl.Camera2D{
             .offset = rl.Vector2{ .x = 0, .y = 0 },
@@ -25,6 +37,7 @@ pub fn main() anyerror!void {
             .zoom = 2,
         },
         .tooltip = try ui_elements.Tooltip.init(allocator),
+        .is_camera_active = false,
     };
 
     rl.setConfigFlags(.{
@@ -79,7 +92,7 @@ pub fn main() anyerror!void {
         defer rl.endDrawing();
         rl.clearBackground(rl.Color.white);
 
-        global_ctx.camera.begin();
+        global_ctx.beginCamera();
         {
             canvas_texture.draw(0, 0, rl.Color.white);
 
@@ -114,7 +127,7 @@ pub fn main() anyerror!void {
                 global_ctx.tooltip.active = true;
             }
         }
-        global_ctx.camera.end();
+        global_ctx.endCamera();
 
         {
             rl.drawFPS(0, 0);

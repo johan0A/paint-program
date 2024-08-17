@@ -17,7 +17,7 @@ pub fn clickableRectangleZone(
     height: i32,
     mouse_button: rl.MouseButton,
 ) ClickableZoneState {
-    const mouse_pos = utils.getWorldMousePos();
+    const mouse_pos = utils.getMousePos();
 
     const is_mouse_over =
         mouse_pos.x() >= posX and mouse_pos.y() >= posY and
